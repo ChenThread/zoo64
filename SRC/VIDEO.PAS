@@ -126,17 +126,20 @@ procedure WriteCP437(text: TVideoLine);
 	end;
 
 procedure VideoWriteTextCO80(x, y, color: byte; text: TVideoLine);
+	var
+		oldX, oldY: integer;
 	begin
+		oldX := WhereX;
+		oldY := WhereY;
 		GotoXY(1+x, 1+y);
 		TextColor(color);
 		WriteCP437(text);
+		GotoXY(oldX, oldY);
 	end;
 
 procedure VideoWriteTextCO40(x, y, color: byte; text: TVideoLine);
 	begin
-		GotoXY(1+x, 1+y);
-		TextColor(color);
-		WriteCP437(text);
+		VideoWriteTextCO80(x, y, color, text);
 	end;
 
 procedure VideoWriteTextBW80(x, y, color: byte; text: TVideoLine);
@@ -152,9 +155,7 @@ procedure VideoWriteTextBW80(x, y, color: byte; text: TVideoLine);
 			else
 				color := $70;
 		end;
-		GotoXY(1+x, 1+y);
-		TextColor(color);
-		WriteCP437(text);
+		VideoWriteTextCO80(x, y, color, text);
 	end;
 
 procedure VideoWriteTextBW40(x, y, color: byte; text: TVideoLine);
@@ -170,9 +171,7 @@ procedure VideoWriteTextBW40(x, y, color: byte; text: TVideoLine);
 			else
 				color := $70;
 		end;
-		GotoXY(1+x, 1+y);
-		TextColor(color);
-		WriteCP437(text);
+		VideoWriteTextCO40(x, y, color, text);
 	end;
 
 function VideoConfigure: boolean;
