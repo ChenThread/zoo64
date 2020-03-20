@@ -127,14 +127,14 @@ procedure WriteCP437(text: TVideoLine);
 
 procedure VideoWriteTextCO80(x, y, color: byte; text: TVideoLine);
 	begin
-		GotoXY(x, y);
+		GotoXY(1+x, 1+y);
 		TextColor(color);
 		WriteCP437(text);
 	end;
 
 procedure VideoWriteTextCO40(x, y, color: byte; text: TVideoLine);
 	begin
-		GotoXY(x, y);
+		GotoXY(1+x, 1+y);
 		TextColor(color);
 		WriteCP437(text);
 	end;
@@ -152,7 +152,7 @@ procedure VideoWriteTextBW80(x, y, color: byte; text: TVideoLine);
 			else
 				color := $70;
 		end;
-		GotoXY(x, y);
+		GotoXY(1+x, 1+y);
 		TextColor(color);
 		WriteCP437(text);
 	end;
@@ -170,7 +170,7 @@ procedure VideoWriteTextBW40(x, y, color: byte; text: TVideoLine);
 			else
 				color := $70;
 		end;
-		GotoXY(x, y);
+		GotoXY(1+x, 1+y);
 		TextColor(color);
 		WriteCP437(text);
 	end;
