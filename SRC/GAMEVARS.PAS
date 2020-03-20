@@ -41,16 +41,16 @@ interface
 	type
 		TString50 = string[50];
 		TCoord = record
-			X: integer;
-			Y: integer;
+			X: smallint;
+			Y: smallint;
 		end;
 		TTile = record
 			Element: byte;
 			Color: byte;
 		end;
-		TElementDrawProc = procedure(x, y: integer; var ch: byte);
-		TElementTickProc = procedure(statId: integer);
-		TElementTouchProc = procedure(x, y: integer; unkArg1: integer; var deltaX, deltaY: integer);
+		TElementDrawProc = procedure(x, y: smallint; var ch: byte);
+		TElementTickProc = procedure(statId: smallint);
+		TElementTouchProc = procedure(x, y: smallint; unkArg1: smallint; var deltaX, deltaY: smallint);
 		TElementDef = record
 			Character: char;
 			Color: byte;
@@ -61,10 +61,10 @@ interface
 			Walkable: boolean;
 			HasDrawProc: boolean;
 			DrawProc: TElementDrawProc;
-			Cycle: integer;
+			Cycle: smallint;
 			TickProc: TElementTickProc;
 			TouchProc: TElementTouchProc;
-			EditorCategory: integer;
+			EditorCategory: smallint;
 			EditorShortcut: char;
 			Name: string[20];
 			CategoryName: string[20];
@@ -74,19 +74,19 @@ interface
 			ParamBoardName: string[20];
 			ParamDirName: string[20];
 			ParamTextName: string[20];
-			ScoreValue: integer;
+			ScoreValue: smallint;
 		end;
 		TStat = record
 			X, Y: byte;
-			StepX, StepY: integer;
-			Cycle: integer;
+			StepX, StepY: smallint;
+			Cycle: smallint;
 			P1, P2, P3: byte;
-			Follower: integer;
-			Leader: integer;
+			Follower: smallint;
+			Leader: smallint;
 			Under: TTile;
 			Data: ^string;
-			DataPos: integer;
-			DataLen: integer;
+			DataPos: smallint;
+			DataLen: smallint;
 			unk1, unk2: pointer;
 		end;
 		TRleTile = record
@@ -101,56 +101,56 @@ interface
 			Message: string[58];
 			StartPlayerX: byte;
 			StartPlayerY: byte;
-			TimeLimitSec: integer;
+			TimeLimitSec: smallint;
 			unk1: array[70 .. 85] of byte;
 		end;
 		TWorldInfo = record
-			Ammo: integer;
-			Gems: integer;
+			Ammo: smallint;
+			Gems: smallint;
 			Keys: array [1..7] of boolean;
-			Health: integer;
-			CurrentBoard: integer;
-			Torches: integer;
-			TorchTicks: integer;
-			EnergizerTicks: integer;
-			unk1: integer;
-			Score: integer;
+			Health: smallint;
+			CurrentBoard: smallint;
+			Torches: smallint;
+			TorchTicks: smallint;
+			EnergizerTicks: smallint;
+			unk1: smallint;
+			Score: smallint;
 			Name: string[20];
 			Flags: array[1 .. MAX_FLAG] of string[20];
-			BoardTimeSec: integer;
-			BoardTimeHsec: integer;
+			BoardTimeSec: smallint;
+			BoardTimeHsec: smallint;
 			IsSave: boolean;
 			unkPad: array[0 .. 13] of byte;
 		end;
 		TEditorStatSetting = record
 			P1, P2, P3: byte;
-			StepX, StepY: integer;
+			StepX, StepY: smallint;
 		end;
 		TBoard = record
 			Name: TString50;
 			Tiles: array[0 .. BOARD_WIDTH + 1] of array[0 .. BOARD_HEIGHT + 1] of TTile;
-			StatCount: integer;
+			StatCount: smallint;
 			Stats: array[0 .. MAX_STAT + 1] of TStat;
 			Info: TBoardInfo;      
 		end;
 		TWorld = record
-			BoardCount: integer;
+			BoardCount: smallint;
 			BoardData: array[0 .. MAX_BOARD] of pointer;
-			BoardLen: array[0 .. MAX_BOARD] of integer;
+			BoardLen: array[0 .. MAX_BOARD] of smallint;
 			Info: TWorldInfo;
 			EditorStatSettings: array[0 .. MAX_ELEMENT] of TEditorStatSetting;
 		end;
 		THighScoreEntry = record
 			Name: string[50];
-			Score: integer;
+			Score: smallint;
 		end;
 		THighScoreList = array[1 .. HIGH_SCORE_COUNT] of THighScoreEntry;
 		TIoTmpBuf = array[0 .. 19999] of byte;
 	var
-		PlayerDirX: integer;
-		PlayerDirY: integer;
-		unkVar_0476: integer;
-		unkVar_0478: integer;
+		PlayerDirX: smallint;
+		PlayerDirY: smallint;
+		unkVar_0476: smallint;
+		unkVar_0478: smallint;
 
 		TransitionTable: array[1 .. 80*25] of TCoord;
 		LoadedGameFileName: TString50;
@@ -174,30 +174,30 @@ interface
 
 		GameTitleExitRequested: boolean;
 		GamePlayExitRequested: boolean;
-		GameStateElement: integer;
-		ReturnBoardId: integer;
+		GameStateElement: smallint;
+		ReturnBoardId: smallint;
 
-		TransitionTableSize: integer;
+		TransitionTableSize: smallint;
 		TickSpeed: byte;
 
 		IoTmpBuf: ^TIoTmpBuf;
 
 		ElementDefs: array[0 .. MAX_ELEMENT] of TElementDef;
-		EditorPatternCount: integer;
+		EditorPatternCount: smallint;
 		EditorPatterns: array[1 .. 10] of byte;
 
-		TickTimeDuration: integer;
-		CurrentTick: integer;
-		CurrentStatTicked: integer;
+		TickTimeDuration: smallint;
+		CurrentTick: smallint;
+		CurrentStatTicked: smallint;
 		GamePaused: boolean;
-		TickTimeCounter: integer;
+		TickTimeCounter: smallint;
 
 		ForceDarknessOff: boolean;
 		InitialTextAttr: byte;
 
 		OopChar: char;
 		OopWord: string[20];
-		OopValue: integer;
+		OopValue: smallint;
 
 		DebugEnabled: boolean;
 
@@ -210,7 +210,7 @@ interface
 		ResetConfig: boolean; { This flag is a remnant from ZZT 3.0. }
 		JustStarted: boolean;
 
-		WorldFileDescCount: integer;
+		WorldFileDescCount: smallint;
 		WorldFileDescKeys: array[1 .. 10] of TString50;
 		WorldFileDescValues: array[1 .. 10] of TString50;
 	const
