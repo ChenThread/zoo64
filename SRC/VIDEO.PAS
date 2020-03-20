@@ -132,7 +132,9 @@ procedure VideoWriteTextCO80(x, y, color: byte; text: TVideoLine);
 		oldX := WhereX;
 		oldY := WhereY;
 		GotoXY(1+x, 1+y);
-		TextColor(color);
+		{ FIXME: Restore this somehow --GM }
+		TextColor(color and $0F);
+		TextBackground((color shr 4) and $0F);
 		WriteCP437(text);
 		GotoXY(oldX, oldY);
 	end;
