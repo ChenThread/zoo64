@@ -93,9 +93,36 @@ var
 	VideoCursorVisible: boolean;
 
 procedure WriteCP437(text: TVideoLine);
+	var
+		textRaw: RawByteString;
+		x, y, i: integer;
+		ch: integer;
 	begin
-		{ TODO! }
-		Write(text);
+		{
+			Apparently Free Pascal's Crt unit doesn't actually support UTF-8.
+			So we force it to accept what we tell it to.
+			Yep, one character at a time. --GM
+		}
+		x := WhereX;
+		y := WhereY;
+		for i := 1 to Length(text) do begin
+			ch := CP437ToUnicode[Ord(text[i])];
+			if ch < $80 then
+				textRaw := Chr(ch)
+			else if ch < $0800 then
+				textRaw := (''
+					+ Chr(((ch shr  6) and $1F) or $C0)
+					+ Chr(((ch shr  0) and $3F) or $80)
+					)
+			else { ch < $10000 }
+				textRaw := (''
+					+ Chr(((ch shr 12) and $0F) or $E0)
+					+ Chr(((ch shr  6) and $3F) or $80)
+					+ Chr(((ch shr  0) and $3F) or $80)
+					);
+			Write(textRaw);
+			GotoXY(x+(i-1)+1, y);
+		end;
 	end;
 
 procedure VideoWriteTextCO80(x, y, color: byte; text: TVideoLine);
