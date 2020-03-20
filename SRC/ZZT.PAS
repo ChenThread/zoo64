@@ -54,7 +54,6 @@ procedure ParseArguments;
 
 procedure GameConfigure;
 	var
-		unk1: integer;
 		joystickEnabled, mouseEnabled: boolean;
 		cfgFile: text;
 	begin
@@ -64,7 +63,9 @@ procedure GameConfigure;
 		ConfigWorldFile := '';
 		GameVersion := '3.2';
 
-		Assign(cfgFile, 'zzt.cfg');
+		{ Let's keep it all upper-case for now. --GM }
+		{Assign(cfgFile, 'zzt.cfg');}
+		Assign(cfgFile, 'ZZT.CFG');
 		Reset(cfgFile);
 		if IOResult = 0 then begin
 			Readln(cfgFile, ConfigWorldFile);
@@ -179,7 +180,7 @@ begin
 	SoundClearQueue;
 
 	VideoUninstall;
-	Port[PORT_CGA_PALETTE] := 0;
+	{ Port[PORT_CGA_PALETTE] := 0; }
 	TextAttr := InitialTextAttr;
 	ClrScr;
 

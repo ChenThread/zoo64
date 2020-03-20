@@ -105,7 +105,7 @@ procedure TextWindowDrawTitle(color: integer; title: TTextWindowLine);
 
 procedure TextWindowDrawOpen(var state: TTextWindowState);
 	var
-		ix, iy: integer;
+		iy: integer;
 	begin
 		with state do begin
 			for iy := 1 to (TextWindowHeight + 1) do
@@ -126,8 +126,7 @@ procedure TextWindowDrawOpen(var state: TTextWindowState);
 
 procedure TextWindowDrawClose(var state: TTextWindowState);
 	var
-		ix, iy: integer;
-		unk1, unk2: integer;
+		iy: integer;
 	begin
 		with state do begin
 			for iy := 0 to (TextWindowHeight div 2) do begin
@@ -199,7 +198,6 @@ procedure TextWindowDrawLine(var state: TTextWindowState; lpos: integer; without
 procedure TextWindowDraw(var state: TTextWindowState; withoutFormatting, viewingFile: boolean);
 	var
 		i: integer;
-		unk1: integer;
 	begin
 		for i := 0 to (TextWindowHeight - 4) do
 			TextWindowDrawLine(state, state.LinePos - (TextWindowHeight div 2) + i + 2,
@@ -271,7 +269,6 @@ procedure TextWindowPrint(var state: TTextWindowState);
 procedure TextWindowSelect(var state: TTextWindowState; hyperlinkAsSelect, viewingFile: boolean);
 	var
 		newLinePos: integer;
-		unk1: integer;
 		iLine, iChar: integer;
 		pointerStr: string[20];
 	label LabelMatched;

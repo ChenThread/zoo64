@@ -102,7 +102,13 @@ const
 	StatTemplateDefault: TStat = (
 		X: 0; Y: 0; StepX: 0; StepY: 0;
 		Cycle: 0; P1: 0; P2: 0; P3: 0;
-		Follower: -1; Leader: -1
+		Follower: -1; Leader: -1;
+		Under: (Element: 0; Color: 0;);
+		Data: nil;
+		DataPos: 0;
+		DataLen: 0;
+		unk1: nil;
+		unk2: nil;
 	);
 	LineChars: string[16] = #249#208#210#186#181#188#187#185#198#200#201#204#205#202#203#206;
 
@@ -651,7 +657,6 @@ procedure PauseOnError;
 
 function DisplayIOError: boolean;
 	var
-		errorNumStr: string[50];
 		textWindow: TTextWindowState;
 	begin
 		if IOResult = 0 then begin
@@ -764,7 +769,6 @@ procedure WorldSave(filename, extension: TString50);
 	var
 		f: file;
 		i: integer;
-		unk1: integer;
 		ptr: pointer;
 		version: integer;
 	label OnError;
@@ -1008,11 +1012,8 @@ procedure MoveStat(statId: integer; newX, newY: integer);
 		iUnder: TTile;
 		ix, iy: integer;
 		oldX, oldY: integer;
-		oldBgColor: integer;
 	begin
 		with Board.Stats[statId] do begin
-			oldBgColor := Board.Tiles[newX][newY].Color and $F0;
-
 			iUnder := Board.Stats[statId].Under;
 			Board.Stats[statId].Under := Board.Tiles[newX][newY];
 
@@ -1140,7 +1141,8 @@ procedure GameUpdateSidebar;
 				VideoWriteText(65, 15, $1F, ' Be noisy');
 
 			if DebugEnabled then begin
-				Str(MemAvail, numStr);
+				{ Str(MemAvail, numStr); }
+				Str(501337, numStr); { anything will do here --GM }
 				VideoWriteText(69, 4, $1E, 'm' + numStr + ' ');
 			end;
 		end;
@@ -1320,14 +1322,12 @@ procedure BoardEnter;
 
 procedure BoardPassageTeleport(x, y: integer);
 	var
-		oldBoard: integer;
 		col: byte;
 		ix, iy: integer;
 		newX, newY: integer;
 	begin
 		col := Board.Tiles[x][y].Color;
 
-		oldBoard := World.Info.CurrentBoard;
 		BoardChange(Board.Stats[GetStatIdAt(x, y)].P3);
 
 		newX := 0;
@@ -1515,6 +1515,16 @@ procedure GamePlayLoop(boardChanged: boolean);
 		CurrentTick := Random(100);
 		CurrentStatTicked := Board.StatCount + 1;
 
+		{
+			pauseBlink isn't initialised in the original.
+			So it most likely depends on what was on the stack earlier.
+
+			I'm going to guess it's most likely to be not 0,
+			but there's a chance it may be more likely to be 0,
+			and I'm pretty sure that anything nonzero is true. --GM
+		}
+		pauseBlink := true;
+
 		repeat
 			if GamePaused then begin
 				if SoundHasTimeElapsed(TickTimeCounter, 25) then
@@ -1689,7 +1699,7 @@ procedure GamePrintRegisterMessage;
 		s: string;
 		f: file;
 		i: integer;
-		ix, iy: integer;
+		iy: integer;
 		color: integer;
 		isReading: boolean;
 		strPtr: pointer;

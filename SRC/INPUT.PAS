@@ -83,15 +83,19 @@ var
 
 function InputIsJoystickButtonPressed: boolean;
 	begin
-		InputIsJoystickButtonPressed := (Port[PORT_JOYSTICK] and $30) <> $30;
+		{ TODO: Get buttons }
+		{InputIsJoystickButtonPressed := (Port[PORT_JOYSTICK] and $30) <> $30;}
+		InputIsJoystickButtonPressed := false;
 	end;
 
 procedure InputJoystickGetCoords(var x, y: integer);
-	var
-		startTicks: word;
+	{var
+		startTicks: word;}
 	begin
 		x := 0;
 		y := 0;
+		{ TODO: Get coords }
+		{
 		startTicks := TimerTicks;
 		Port[PORT_JOYSTICK] := 0;
 		repeat
@@ -103,6 +107,7 @@ procedure InputJoystickGetCoords(var x, y: integer);
 			x := -1;
 			y := -1;
 		end;
+		}
 	end;
 
 function InputCalibrateJoystickPosition(msg: String; var x, y: integer): boolean;
@@ -194,7 +199,7 @@ procedure InputUpdate;
 	var
 		joyXraw, joyYraw: integer;
 		joyX, joyY: integer;
-		regs: Registers;
+		mouseButtons: integer;
 	begin
 		InputDeltaX := 0;
 		InputDeltaY := 0;
@@ -271,10 +276,19 @@ procedure InputUpdate;
 				InputShiftAccepted := false;
 			end;
 		end else if InputMouseEnabled then begin
-			regs.AX := $0B;
-			Intr($33, regs);
-			InputMouseX := InputMouseX + Integer(regs.CX);
-			InputMouseY := InputMouseY + Integer(regs.DX);
+			{
+				TODO: INT 33h/AX=000Bh: Read Motion Counters
+
+				Output:
+				CX = number of mickeys mouse moved horizontally since last call
+				DX = number of mickeys mouse moved vertically
+
+				These get added like so:
+			}
+			{
+				InputMouseX := InputMouseX + Integer(regs.CX);
+				InputMouseY := InputMouseY + Integer(regs.DX);
+			}
 
 			if Abs(InputMouseX) > Abs(InputMouseY) then begin
 				if Abs(InputMouseX) > InputMouseActivationX then begin
@@ -294,11 +308,26 @@ procedure InputUpdate;
 				end;
 			end;
 
-			regs.AX := $03;
-			Intr($33, regs);
+			{
+				TODO: INT 33h/AX=0003h: Return Position and Button Status
+
+				Output:
+				BX = button status (see RBIL #03168)
+				CX = column
+				DX = row
+
+				We only care about BX here.
+
+				Bit(s)	Description	(RBIL Table 03168)
+				 0	left button pressed if 1
+				 1	right button pressed if 1
+				 2	middle button pressed if 1 (Mouse Systems/Logitech/Genius)
+			}
+
+			mouseButtons := 0;
 
 			{ left mouse button }
-			if (regs.BX and 1) <> 0 then begin
+			if (mouseButtons and 1) <> 0 then begin
 				if not InputShiftAccepted then
 					InputShiftPressed := true;
 			end else begin
@@ -306,7 +335,7 @@ procedure InputUpdate;
 			end;
 
 			{ right/middle mouse button }
-			if (regs.BX and 6) <> 0 then begin
+			if (mouseButtons and 6) <> 0 then begin
 				if (InputDeltaX <> 0) or (InputDeltaY <> 0) then begin
 					InputMouseButtonX := InputDeltaX;
 					InputMouseButtonY := InputDeltaY;
@@ -327,12 +356,14 @@ procedure InputUpdate;
 	end;
 
 function InputInitMouse: boolean;
-	var
-		regs: Registers;
 	begin
-		regs.AX := 0;
-		Intr($33, regs);
-		InputInitMouse := (regs.AX = 0);
+		{
+			TODO: Any mouse initialisation needed here.
+
+			Also, for some reason,
+			the original code sets InputInitMouse by some conditional,
+			but then immediately sets it to true afterwards.
+		}
 		InputInitMouse := true;
 	end;
 

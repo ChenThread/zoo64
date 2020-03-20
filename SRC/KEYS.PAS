@@ -39,16 +39,33 @@ implementation
 uses Dos;
 
 procedure KeysUpdateModifiers;
-	var
-		regs: Registers;
 	begin
-		regs.AH := $02;
-		Intr($16, regs);
-		KeysRightShiftHeld := (regs.AL mod 2) = 1;
-		KeysLeftShiftHeld := ((regs.AL div 2) mod 2) = 1;
-		KeysCtrlHeld := ((regs.AL div 4) mod 2) = 1;
-		KeysAltHeld := ((regs.AL div 8) mod 2) = 1;
-		KeysNumLockHeld := ((regs.AL div 32) mod 2) = 1;
+		{
+			TODO: INT 16h/AH=02h - Get shift flags 
+			Bit(s)	Description	(RBIL Table 00582)
+			 7	Insert active
+			 6	CapsLock active
+			 5	NumLock active
+			 4	ScrollLock active
+			 3	Alt key pressed (either Alt on 101/102-key keyboards)
+			 2	Ctrl key pressed (either Ctrl on 101/102-key keyboards)
+			 1	left shift key pressed
+			 0	right shift key pressed
+		}
+
+		{
+			KeysRightShiftHeld := (regs.AL mod 2) = 1;
+			KeysLeftShiftHeld := ((regs.AL div 2) mod 2) = 1;
+			KeysCtrlHeld := ((regs.AL div 4) mod 2) = 1;
+			KeysAltHeld := ((regs.AL div 8) mod 2) = 1;
+			KeysNumLockHeld := ((regs.AL div 32) mod 2) = 1;
+		}
+		KeysRightShiftHeld := false;
+		KeysLeftShiftHeld := false;
+		KeysCtrlHeld := false;
+		KeysAltHeld := false;
+		KeysNumLockHeld := false;
+
 		KeysShiftHeld := KeysRightShiftHeld or KeysLeftShiftHeld;
 	end;
 

@@ -1,2 +1,7 @@
+# Output
 BIN
 DIST
+
+# VIM
+.sw?
+.*.swp

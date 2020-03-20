@@ -79,7 +79,6 @@ procedure EditorLoop;
 		cursorPattern, cursorColor: integer;
 		i, iElem: integer;
 		canModify: boolean;
-		unk1: array[0 .. 49] of byte;
 		copiedStat: TStat;
 		copiedHasStat: boolean;
 		copiedTile: TTile;
@@ -353,7 +352,6 @@ procedure EditorLoop;
 		var
 			state: TTextWindowState;
 			iLine, iChar: integer;
-			unk1: array[0 .. 51] of byte;
 			dataChar: char;
 			dataPtr: pointer;
 		begin
@@ -967,7 +965,10 @@ procedure HighScoresSave;
 		end;
 	end;
 
-{$F+}
+(*
+	Not sure what this is for. FPC complains a bit. --GM
+	{$F+}
+*)
 
 procedure HighScoresInitTextWindow(var state: TTextWindowState);
 	var
@@ -1086,9 +1087,7 @@ function EditorGetBoardName(boardId: integer; titleScreenIsNone: boolean): TStri
 
 function EditorSelectBoard(title: string; currentBoard: integer; titleScreenIsNone: boolean): integer;
 	var
-		unk1: string;
 		i: integer;
-		unk2: integer;
 		textWindow: TTextWindowState;
 	begin
 		textWindow.Title := title;

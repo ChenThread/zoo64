@@ -39,8 +39,6 @@ interface
 		SoundDurationMultiplier: byte;
 		SoundDurationCounter: byte;
 		SoundBuffer: string;
-		SoundNewVector: pointer;
-		SoundOldVector: pointer;
 		SoundBufferPos: integer;
 		SoundIsPlaying: boolean;
 		SoundTimeCheckCounter: integer;
@@ -182,7 +180,6 @@ function SoundHasTimeElapsed(var counter: integer; duration: integer): boolean;
 	end;
 
 procedure SoundTimerHandler;
-	interrupt;
 	begin
 		Inc(TimerTicks);
 		if (SoundTimeCheckCounter > 0) and ((SoundTimeCheckCounter mod 2) = 0) then begin
@@ -217,7 +214,6 @@ procedure SoundTimerHandler;
 
 procedure SoundUninstall;
 	begin
-		SetIntVec($1C, SoundOldVector);
 	end;
 
 function SoundParse(input: string): string;
@@ -329,7 +325,7 @@ function SoundParse(input: string): string;
 					output := output + #0 + Chr(noteDuration);
 					AdvanceInput;
 				end;
-				'0'..'9': begin
+				'0'..'2','4'..'9': begin
 					output := output + Chr(Ord(input[1]) + $F0 - Ord('0')) + Chr(noteDuration);
 					AdvanceInput;
 				end;
@@ -351,7 +347,4 @@ begin
 	SoundDurationMultiplier := 1;
 	SoundIsPlaying := false;
 	TimerTicks := 0;
-	SoundNewVector := @SoundTimerHandler;
-	GetIntVec($1C, SoundOldVector);
-	SetIntVec($1C, SoundNewVector);
 end.
