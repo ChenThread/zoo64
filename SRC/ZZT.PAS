@@ -91,27 +91,32 @@ procedure GameConfigure;
 		TextColor(White);
 		TextColor(White);
 		Writeln;
-		Writeln('                                 <=-  ZZT  -=>');
+		WriteCP437('                                 <=-  ZZT  -=>');
+		Writeln;
 		TextColor(Yellow);
-		if Length(ConfigRegistration) = 0 then
-			Writeln('                             Shareware version 3.2')
-		else
-			Writeln('                                  Version  3.2');
-		Writeln('                            Created by Tim Sweeney');
+		if Length(ConfigRegistration) = 0 then begin
+			WriteCP437('                             Shareware version 3.2');
+			Writeln;
+		end else begin
+			WriteCP437('                                  Version  3.2');
+			Writeln;
+		end;
+		WriteCP437('                            Created by Tim Sweeney');
+		Writeln;
 		GotoXY(1, 7);
 		TextColor(Blue);
-		Write('================================================================================');
+		WriteCP437('================================================================================');
 		GotoXY(1, 24);
-		Write('================================================================================');
+		WriteCP437('================================================================================');
 		TextColor(White);
 		GotoXY(30, 7);
-		Write(' Game Configuration ');
+		WriteCP437(' Game Configuration ');
 		GotoXY(1, 25);
-		Write(' Copyright (c) 1991 Epic MegaGames                         Press ... to abort');
+		WriteCP437(' Copyright (c) 1991 Epic MegaGames                         Press ... to abort');
 		TextColor(Black);
 		TextBackground(LightGray);
 		GotoXY(66, 25);
-		Write('ESC');
+		WriteCP437('ESC');
 		Window(1, 8, 80, 23);
 		TextColor(Yellow);
 		TextBackground(Black);
@@ -188,7 +193,8 @@ begin
 		GamePrintRegisterMessage;
 	end else begin
 		Writeln;
-		Writeln('  Registered version -- Thank you for playing ZZT.');
+		WriteCP437('  Registered version -- Thank you for playing ZZT.');
+		Writeln;
 		Writeln;
 	end;
 

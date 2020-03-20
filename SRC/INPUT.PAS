@@ -70,7 +70,7 @@ interface
 	function InputConfigure: boolean;
 
 implementation
-uses Dos, Crt, Keys, Sounds;
+uses Dos, Crt, Keys, Sounds, Video;
 
 const
 	PORT_JOYSTICK = $0201;
@@ -115,7 +115,7 @@ function InputCalibrateJoystickPosition(msg: String; var x, y: integer): boolean
 		charTyped: char;
 	begin
 		charTyped := #0;
-		Write(msg);
+		WriteCP437(msg);
 		repeat
 			InputJoystickGetCoords(x, y);
 			if KeyPressed then
@@ -159,7 +159,8 @@ procedure InputCalibrateJoystick;
 	CalibrationStart:
 		InputJoystickEnabled := false;
 		WriteLn;
-		WriteLn('  Joystick calibration:  Press ESCAPE to abort.');
+		WriteCP437('  Joystick calibration:  Press ESCAPE to abort.');
+		WriteLn;
 		WriteLn;
 
 		if not InputCalibrateJoystickPosition(
@@ -186,7 +187,7 @@ procedure InputCalibrateJoystick;
 		begin
 			InputJoystickEnabled := true;
 		end else begin
-			Write('  Calibration failed - try again (y/N)? ');
+			WriteCP437('  Calibration failed - try again (y/N)? ');
 			repeat until KeyPressed;
 			charTyped := ReadKey;
 			WriteLn;
@@ -380,12 +381,12 @@ function InputConfigure: boolean;
 		charTyped := ' ';
 		if InputJoystickEnabled or InputMouseEnabled then begin
 			Writeln;
-			Write('  Game controller:  K)eyboard');
+			WriteCP437('  Game controller:  K)eyboard');
 			if InputJoystickEnabled then
-				Write(',  J)oystick');
+				WriteCP437(',  J)oystick');
 			if InputMouseEnabled then
-				Write(',  M)ouse');
-			Write('?  ');
+				WriteCP437(',  M)ouse');
+			WriteCP437('?  ');
 
 			repeat
 				repeat until KeyPressed;

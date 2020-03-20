@@ -36,7 +36,7 @@ interface
 	procedure SidebarClearLine(y: integer);
 	procedure SidebarClear;
 	procedure GenerateTransitionTable;
-	procedure AdvancePointer(var address: pointer; count: integer);
+	procedure AdvancePointer(var address: pointer; count: longint);
 	procedure BoardClose;
 	procedure BoardOpen(boardId: integer);
 	procedure BoardChange(boardId: integer);
@@ -150,9 +150,10 @@ procedure GenerateTransitionTable;
 		end;
 	end;
 
-procedure AdvancePointer(var address: pointer; count: integer);
+procedure AdvancePointer(var address: pointer; count: longint);
 	begin
-		address := Ptr(Seg(address^), Ofs(address^) + count);
+		{address := Ptr(Seg(address^), Ofs(address^) + count);}
+		address := address + count;
 	end;
 
 procedure BoardClose;
