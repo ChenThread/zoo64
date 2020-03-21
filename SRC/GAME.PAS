@@ -1566,6 +1566,10 @@ procedure GamePlayLoop(boardChanged: boolean);
 		}
 		pauseBlink := true;
 
+		{ Force system time for now. TODO: Find a better spot for this. --GM }
+		SoundTimeCheckCounter := 0;
+		UseSystemTimeForElapsed := true;
+
 		repeat
 			if GamePaused then begin
 				if SoundHasTimeElapsed(TickTimeCounter, 25) then
