@@ -40,11 +40,11 @@ interface
 		TORCH_DIST_SQR = 50;
 	type
 		TString50 = string[50];
-		TCoord = record
+		TCoord = packed record
 			X: smallint;
 			Y: smallint;
 		end;
-		TTile = record
+		TTile = packed record
 			Element: byte;
 			Color: byte;
 		end;
@@ -102,11 +102,11 @@ interface
 			DataLen: smallint;
 			unk1, unk2: pointer;
 		end;
-		TRleTile = record
+		TRleTile = packed record
 			Count: byte;
 			Tile: TTile;
 		end;
-		TBoardInfo = record
+		TBoardInfo = packed record
 			MaxShots: byte;
 			IsDark: boolean;
 			NeighborBoards: array[0 .. 3] of byte;
@@ -117,7 +117,7 @@ interface
 			TimeLimitSec: smallint;
 			unk1: array[70 .. 85] of byte;
 		end;
-		TWorldInfo = record
+		TWorldInfo = packed record
 			Ammo: smallint;
 			Gems: smallint;
 			Keys: array [1..7] of boolean;
@@ -135,25 +135,25 @@ interface
 			IsSave: boolean;
 			unkPad: array[0 .. 13] of byte;
 		end;
-		TEditorStatSetting = record
+		TEditorStatSetting = packed record
 			P1, P2, P3: byte;
 			StepX, StepY: smallint;
 		end;
-		TBoard = record
+		TBoard = packed record
 			Name: TString50;
 			Tiles: array[0 .. BOARD_WIDTH + 1] of array[0 .. BOARD_HEIGHT + 1] of TTile;
 			StatCount: smallint;
 			Stats: array[0 .. MAX_STAT + 1] of TStat;
 			Info: TBoardInfo;      
 		end;
-		TWorld = record
+		TWorld = packed record
 			BoardCount: smallint;
 			BoardData: array[0 .. MAX_BOARD] of pointer;
 			BoardLen: array[0 .. MAX_BOARD] of smallint;
 			Info: TWorldInfo;
 			EditorStatSettings: array[0 .. MAX_ELEMENT] of TEditorStatSetting;
 		end;
-		THighScoreEntry = record
+		THighScoreEntry = packed record
 			Name: string[50];
 			Score: smallint;
 		end;
