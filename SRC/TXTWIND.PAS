@@ -24,6 +24,7 @@
 }
 
 {$I-}
+{$PACKRECORDS 1}
 unit TxtWind;
 
 interface
@@ -578,7 +579,7 @@ procedure TextWindowOpenFile(filename: TTextWindowLine; var state: TTextWindowSt
 						if lineLen = 0 then begin
 							Lines[LineCount]^ := '';
 						end else begin
-							BlockRead(f, line^, Ord(Lines[LineCount]^[0]));
+							BlockRead(f, line, Ord(Lines[LineCount]^[0]));
 						end;
 
 						if Lines[LineCount]^ = '@' then begin

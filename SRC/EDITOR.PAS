@@ -24,6 +24,7 @@
 }
 
 {$I-}
+{$PACKRECORDS 1}
 {$V-}
 unit Editor;
 

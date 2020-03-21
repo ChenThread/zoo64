@@ -23,6 +23,7 @@
 	SOFTWARE.
 }
 
+{$PACKRECORDS 1}
 unit Sounds;
 
 interface

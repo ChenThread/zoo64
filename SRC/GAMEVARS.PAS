@@ -23,6 +23,7 @@
 	SOFTWARE.
 }
 
+{$PACKRECORDS 1}
 unit GameVars;
 
 interface
@@ -40,11 +41,11 @@ interface
 		TORCH_DIST_SQR = 50;
 	type
 		TString50 = string[50];
-		TCoord = packed record
+		TCoord = record
 			X: smallint;
 			Y: smallint;
 		end;
-		TTile = packed record
+		TTile = record
 			Element: byte;
 			Color: byte;
 		end;
@@ -76,7 +77,7 @@ interface
 			ParamTextName: string[20];
 			ScoreValue: smallint;
 		end;
-		TFileStat = packed record
+		TFileStat = record
 			X, Y: byte;
 			StepX, StepY: smallint;
 			Cycle: smallint;
@@ -102,11 +103,11 @@ interface
 			DataLen: smallint;
 			unk1, unk2: pointer;
 		end;
-		TRleTile = packed record
+		TRleTile = record
 			Count: byte;
 			Tile: TTile;
 		end;
-		TBoardInfo = packed record
+		TBoardInfo = record
 			MaxShots: byte;
 			IsDark: boolean;
 			NeighborBoards: array[0 .. 3] of byte;
@@ -117,7 +118,7 @@ interface
 			TimeLimitSec: smallint;
 			unk1: array[70 .. 85] of byte;
 		end;
-		TWorldInfo = packed record
+		TWorldInfo = record
 			Ammo: smallint;
 			Gems: smallint;
 			Keys: array [1..7] of boolean;
@@ -135,25 +136,25 @@ interface
 			IsSave: boolean;
 			unkPad: array[0 .. 13] of byte;
 		end;
-		TEditorStatSetting = packed record
+		TEditorStatSetting = record
 			P1, P2, P3: byte;
 			StepX, StepY: smallint;
 		end;
-		TBoard = packed record
+		TBoard = record
 			Name: TString50;
 			Tiles: array[0 .. BOARD_WIDTH + 1] of array[0 .. BOARD_HEIGHT + 1] of TTile;
 			StatCount: smallint;
 			Stats: array[0 .. MAX_STAT + 1] of TStat;
 			Info: TBoardInfo;      
 		end;
-		TWorld = packed record
+		TWorld = record
 			BoardCount: smallint;
 			BoardData: array[0 .. MAX_BOARD] of pointer;
 			BoardLen: array[0 .. MAX_BOARD] of smallint;
 			Info: TWorldInfo;
 			EditorStatSettings: array[0 .. MAX_ELEMENT] of TEditorStatSetting;
 		end;
-		THighScoreEntry = packed record
+		THighScoreEntry = record
 			Name: string[50];
 			Score: smallint;
 		end;

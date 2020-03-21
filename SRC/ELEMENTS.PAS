@@ -23,11 +23,8 @@
 	SOFTWARE.
 }
 
-(*
-	Not sure what this is for. FPC complains a bit. --GM
-	{$F+}
-*)
 {$I-}
+{$PACKRECORDS 1}
 unit Elements;
 
 interface
@@ -547,8 +544,13 @@ procedure ElementConveyorCCWTick(statId: integer);
 	end;
 
 procedure ElementBombDraw(x, y: integer; var ch: byte);
+	var
+		statId: integer;
 	begin
-		with Board.Stats[GetStatIdAt(x, y)] do
+		statId := GetStatIdAt(x, y);
+		if statId < 0 then
+			ch := 11
+		else with Board.Stats[statId] do
 			if P1 <= 1 then
 				ch := 11
 			else
@@ -919,8 +921,13 @@ procedure ElementPushablePush(x, y: integer; deltaX, deltaY: integer);
 	end;
 
 procedure ElementDuplicatorDraw(x, y: integer; var ch: byte);
+	var
+		statId: integer;
 	begin
-		with Board.Stats[GetStatIdAt(x, y)] do
+		statId := GetStatIdAt(x, y);
+		if statId < 0 then
+			ch := 250
+		else with Board.Stats[statId] do
 			case P1 of
 				1: ch := 250;
 				2: ch := 249;
@@ -946,8 +953,14 @@ procedure ElementObjectTick(statId: integer);
 	end;
 
 procedure ElementObjectDraw(x, y: integer; var ch: byte);
+	var
+		statId: integer;
 	begin
-		ch := Board.Stats[GetStatIdAt(x, y)].P1;
+		statId := GetStatIdAt(x, y);
+		if statId >= 0 then
+			ch := Board.Stats[statId].P1
+		else
+			ch := 0;
 	end;
 
 procedure ElementObjectTouch(x, y: integer; unkArg1: integer; var deltaX, deltaY: integer);
@@ -1115,8 +1128,13 @@ procedure ElementPushableTouch(x, y: integer; unkArg1: integer; var deltaX, delt
 	end;
 
 procedure ElementPusherDraw(x, y: integer; var ch: byte);
+	var
+		statId: integer;
 	begin
-		with Board.Stats[GetStatIdAt(x, y)] do begin
+		statId := GetStatIdAt(x, y);
+		if statId < 0 then
+			ch := 31
+		else with Board.Stats[statId] do begin
 			if StepX = 1 then
 				ch := 16
 			else if StepX = -1 then
@@ -1517,9 +1535,9 @@ procedure InitElementDefs;
 				Walkable := false;
 				HasDrawProc := false;
 				Cycle := -1;
-				TickProc := @ElementDefaultTick;
-				DrawProc := @ElementDefaultDraw;
-				TouchProc := @ElementDefaultTouch;
+				TickProc := ElementDefaultTick;
+				DrawProc := ElementDefaultDraw;
+				TouchProc := ElementDefaultTouch;
 				EditorCategory := 0;
 				EditorShortcut := #0;
 				Name := '';
@@ -1542,14 +1560,14 @@ procedure InitElementDefs;
 		ElementDefs[3].Character := ' ';
 		ElementDefs[3].Color := $07;
 		ElementDefs[3].Cycle := 1;
-		ElementDefs[3].TickProc := @ElementMonitorTick;
+		ElementDefs[3].TickProc := ElementMonitorTick;
 		ElementDefs[3].Name := 'Monitor';
 
 		ElementDefs[19].Character := #176;
 		ElementDefs[19].Color := $F9;
 		ElementDefs[19].PlaceableOnTop := true;
 		ElementDefs[19].EditorCategory := CATEGORY_TERRAIN;
-		ElementDefs[19].TouchProc := @ElementWaterTouch;
+		ElementDefs[19].TouchProc := ElementWaterTouch;
 		ElementDefs[19].EditorShortcut := 'W';
 		ElementDefs[19].Name := 'Water';
 		ElementDefs[19].CategoryName := 'Terrains:';
@@ -1557,7 +1575,7 @@ procedure InitElementDefs;
 		ElementDefs[20].Character := #176;
 		ElementDefs[20].Color := $20;
 		ElementDefs[20].Walkable := false;
-		ElementDefs[20].TouchProc := @ElementForestTouch;
+		ElementDefs[20].TouchProc := ElementForestTouch;
 		ElementDefs[20].EditorCategory := CATEGORY_TERRAIN;
 		ElementDefs[20].EditorShortcut := 'F';
 		ElementDefs[20].Name := 'Forest';
@@ -1568,7 +1586,7 @@ procedure InitElementDefs;
 		ElementDefs[4].Pushable := true;
 		ElementDefs[4].VisibleInDark := true;
 		ElementDefs[4].Cycle := 1;
-		ElementDefs[4].TickProc := @ElementPlayerTick;
+		ElementDefs[4].TickProc := ElementPlayerTick;
 		ElementDefs[4].EditorCategory := CATEGORY_ITEM;
 		ElementDefs[4].EditorShortcut := 'Z';
 		ElementDefs[4].Name := 'Player';
@@ -1579,8 +1597,8 @@ procedure InitElementDefs;
 		ElementDefs[41].Destructible := true;
 		ElementDefs[41].Pushable := true;
 		ElementDefs[41].Cycle := 2;
-		ElementDefs[41].TickProc := @ElementLionTick;
-		ElementDefs[41].TouchProc := @ElementDamagingTouch;
+		ElementDefs[41].TickProc := ElementLionTick;
+		ElementDefs[41].TouchProc := ElementDamagingTouch;
 		ElementDefs[41].EditorCategory := CATEGORY_CREATURE;
 		ElementDefs[41].EditorShortcut := 'L';
 		ElementDefs[41].Name := 'Lion';
@@ -1593,8 +1611,8 @@ procedure InitElementDefs;
 		ElementDefs[42].Destructible := true;
 		ElementDefs[42].Pushable := true;
 		ElementDefs[42].Cycle := 2;
-		ElementDefs[42].TickProc := @ElementTigerTick;
-		ElementDefs[42].TouchProc := @ElementDamagingTouch;
+		ElementDefs[42].TickProc := ElementTigerTick;
+		ElementDefs[42].TouchProc := ElementDamagingTouch;
 		ElementDefs[42].EditorCategory := CATEGORY_CREATURE;
 		ElementDefs[42].EditorShortcut := 'T';
 		ElementDefs[42].Name := 'Tiger';
@@ -1606,8 +1624,8 @@ procedure InitElementDefs;
 		ElementDefs[44].Character := #233;
 		ElementDefs[44].Destructible := true;
 		ElementDefs[44].Cycle := 2;
-		ElementDefs[44].TickProc := @ElementCentipedeHeadTick;
-		ElementDefs[44].TouchProc := @ElementDamagingTouch;
+		ElementDefs[44].TickProc := ElementCentipedeHeadTick;
+		ElementDefs[44].TouchProc := ElementDamagingTouch;
 		ElementDefs[44].EditorCategory := CATEGORY_CREATURE;
 		ElementDefs[44].EditorShortcut := 'H';
 		ElementDefs[44].Name := 'Head';
@@ -1619,8 +1637,8 @@ procedure InitElementDefs;
 		ElementDefs[45].Character := 'O';
 		ElementDefs[45].Destructible := true;
 		ElementDefs[45].Cycle := 2;
-		ElementDefs[45].TickProc := @ElementCentipedeSegmentTick;
-		ElementDefs[45].TouchProc := @ElementDamagingTouch;
+		ElementDefs[45].TickProc := ElementCentipedeSegmentTick;
+		ElementDefs[45].TouchProc := ElementDamagingTouch;
 		ElementDefs[45].EditorCategory := CATEGORY_CREATURE;
 		ElementDefs[45].EditorShortcut := 'S';
 		ElementDefs[45].Name := 'Segment';
@@ -1630,23 +1648,23 @@ procedure InitElementDefs;
 		ElementDefs[18].Color := $0F;
 		ElementDefs[18].Destructible := true;
 		ElementDefs[18].Cycle := 1;
-		ElementDefs[18].TickProc := @ElementBulletTick;
-		ElementDefs[18].TouchProc := @ElementDamagingTouch;
+		ElementDefs[18].TickProc := ElementBulletTick;
+		ElementDefs[18].TouchProc := ElementDamagingTouch;
 		ElementDefs[18].Name := 'Bullet';
 
 		ElementDefs[15].Character := 'S';
 		ElementDefs[15].Color := $0F;
 		ElementDefs[15].Destructible := false;
 		ElementDefs[15].Cycle := 1;
-		ElementDefs[15].TickProc := @ElementStarTick;
-		ElementDefs[15].TouchProc := @ElementDamagingTouch;
+		ElementDefs[15].TickProc := ElementStarTick;
+		ElementDefs[15].TouchProc := ElementDamagingTouch;
 		ElementDefs[15].HasDrawProc := true;
-		ElementDefs[15].DrawProc := @ElementStarDraw;
+		ElementDefs[15].DrawProc := ElementStarDraw;
 		ElementDefs[15].Name := 'Star';
 
 		ElementDefs[8].Character := #12;
 		ElementDefs[8].Pushable := true;
-		ElementDefs[8].TouchProc := @ElementKeyTouch;
+		ElementDefs[8].TouchProc := ElementKeyTouch;
 		ElementDefs[8].EditorCategory := CATEGORY_ITEM;
 		ElementDefs[8].EditorShortcut := 'K';
 		ElementDefs[8].Name := 'Key';
@@ -1654,14 +1672,14 @@ procedure InitElementDefs;
 		ElementDefs[5].Character := #132;
 		ElementDefs[5].Color := $03;
 		ElementDefs[5].Pushable := true;
-		ElementDefs[5].TouchProc := @ElementAmmoTouch;
+		ElementDefs[5].TouchProc := ElementAmmoTouch;
 		ElementDefs[5].EditorCategory := CATEGORY_ITEM;
 		ElementDefs[5].EditorShortcut := 'A';
 		ElementDefs[5].Name := 'Ammo';
 
 		ElementDefs[7].Character := #4;
 		ElementDefs[7].Pushable := true;
-		ElementDefs[7].TouchProc := @ElementGemTouch;
+		ElementDefs[7].TouchProc := ElementGemTouch;
 		ElementDefs[7].Destructible := true;
 		ElementDefs[7].EditorCategory := CATEGORY_ITEM;
 		ElementDefs[7].EditorShortcut := 'G';
@@ -1671,7 +1689,7 @@ procedure InitElementDefs;
 		ElementDefs[11].Color := COLOR_WHITE_ON_CHOICE;
 		ElementDefs[11].Cycle := 0;
 		ElementDefs[11].VisibleInDark := true;
-		ElementDefs[11].TouchProc := @ElementPassageTouch;
+		ElementDefs[11].TouchProc := ElementPassageTouch;
 		ElementDefs[11].EditorCategory := CATEGORY_ITEM;
 		ElementDefs[11].EditorShortcut := 'P';
 		ElementDefs[11].Name := 'Passage';
@@ -1679,15 +1697,15 @@ procedure InitElementDefs;
 
 		ElementDefs[9].Character := #10;
 		ElementDefs[9].Color := COLOR_WHITE_ON_CHOICE;
-		ElementDefs[9].TouchProc := @ElementDoorTouch;
+		ElementDefs[9].TouchProc := ElementDoorTouch;
 		ElementDefs[9].EditorCategory := CATEGORY_ITEM;
 		ElementDefs[9].EditorShortcut := 'D';
 		ElementDefs[9].Name := 'Door';
 
 		ElementDefs[10].Character := #232;
 		ElementDefs[10].Color := $0F;
-		ElementDefs[10].TouchProc := @ElementScrollTouch;
-		ElementDefs[10].TickProc := @ElementScrollTick;
+		ElementDefs[10].TouchProc := ElementScrollTouch;
+		ElementDefs[10].TickProc := ElementScrollTick;
 		ElementDefs[10].Pushable := true;
 		ElementDefs[10].Cycle := 1;
 		ElementDefs[10].EditorCategory := CATEGORY_ITEM;
@@ -1698,9 +1716,9 @@ procedure InitElementDefs;
 		ElementDefs[12].Character := #250;
 		ElementDefs[12].Color := $0F;
 		ElementDefs[12].Cycle := 2;
-		ElementDefs[12].TickProc := @ElementDuplicatorTick;
+		ElementDefs[12].TickProc := ElementDuplicatorTick;
 		ElementDefs[12].HasDrawProc := true;
-		ElementDefs[12].DrawProc := @ElementDuplicatorDraw;
+		ElementDefs[12].DrawProc := ElementDuplicatorDraw;
 		ElementDefs[12].EditorCategory := CATEGORY_ITEM;
 		ElementDefs[12].EditorShortcut := 'U';
 		ElementDefs[12].Name := 'Duplicator';
@@ -1710,16 +1728,16 @@ procedure InitElementDefs;
 		ElementDefs[6].Character := #157;
 		ElementDefs[6].Color := $06;
 		ElementDefs[6].VisibleInDark := true;
-		ElementDefs[6].TouchProc := @ElementTorchTouch;
+		ElementDefs[6].TouchProc := ElementTorchTouch;
 		ElementDefs[6].EditorCategory := CATEGORY_ITEM;
 		ElementDefs[6].EditorShortcut := 'T';
 		ElementDefs[6].Name := 'Torch';
 
 		ElementDefs[39].Character := #24;
 		ElementDefs[39].Cycle := 2;
-		ElementDefs[39].TickProc := @ElementSpinningGunTick;
+		ElementDefs[39].TickProc := ElementSpinningGunTick;
 		ElementDefs[39].HasDrawProc := true;
-		ElementDefs[39].DrawProc := @ElementSpinningGunDraw;
+		ElementDefs[39].DrawProc := ElementSpinningGunDraw;
 		ElementDefs[39].EditorCategory := CATEGORY_CREATURE;
 		ElementDefs[39].EditorShortcut := 'G';
 		ElementDefs[39].Name := 'Spinning gun';
@@ -1732,8 +1750,8 @@ procedure InitElementDefs;
 		ElementDefs[35].Destructible := true;
 		ElementDefs[35].Pushable := true;
 		ElementDefs[35].Cycle := 1;
-		ElementDefs[35].TickProc := @ElementRuffianTick;
-		ElementDefs[35].TouchProc := @ElementDamagingTouch;
+		ElementDefs[35].TickProc := ElementRuffianTick;
+		ElementDefs[35].TouchProc := ElementDamagingTouch;
 		ElementDefs[35].EditorCategory := CATEGORY_CREATURE;
 		ElementDefs[35].EditorShortcut := 'R';
 		ElementDefs[35].Name := 'Ruffian';
@@ -1746,8 +1764,8 @@ procedure InitElementDefs;
 		ElementDefs[34].Destructible := true;
 		ElementDefs[34].Pushable := true;
 		ElementDefs[34].Cycle := 3;
-		ElementDefs[34].TickProc := @ElementBearTick;
-		ElementDefs[34].TouchProc := @ElementDamagingTouch;
+		ElementDefs[34].TickProc := ElementBearTick;
+		ElementDefs[34].TouchProc := ElementDamagingTouch;
 		ElementDefs[34].EditorCategory := CATEGORY_CREATURE;
 		ElementDefs[34].EditorShortcut := 'B';
 		ElementDefs[34].Name := 'Bear';
@@ -1759,8 +1777,8 @@ procedure InitElementDefs;
 		ElementDefs[37].Color := COLOR_CHOICE_ON_BLACK;
 		ElementDefs[37].Destructible := false;
 		ElementDefs[37].Cycle := 3;
-		ElementDefs[37].TickProc := @ElementSlimeTick;
-		ElementDefs[37].TouchProc := @ElementSlimeTouch;
+		ElementDefs[37].TickProc := ElementSlimeTick;
+		ElementDefs[37].TouchProc := ElementSlimeTouch;
 		ElementDefs[37].EditorCategory := CATEGORY_CREATURE;
 		ElementDefs[37].EditorShortcut := 'V';
 		ElementDefs[37].Name := 'Slime';
@@ -1770,7 +1788,7 @@ procedure InitElementDefs;
 		ElementDefs[38].Color := $07;
 		ElementDefs[38].Destructible := false;
 		ElementDefs[38].Cycle := 3;
-		ElementDefs[38].TickProc := @ElementSharkTick;
+		ElementDefs[38].TickProc := ElementSharkTick;
 		ElementDefs[38].EditorCategory := CATEGORY_CREATURE;
 		ElementDefs[38].EditorShortcut := 'Y';
 		ElementDefs[38].Name := 'Shark';
@@ -1779,8 +1797,8 @@ procedure InitElementDefs;
 		ElementDefs[16].Character := '/';
 		ElementDefs[16].Cycle := 3;
 		ElementDefs[16].HasDrawProc := true;
-		ElementDefs[16].TickProc := @ElementConveyorCWTick;
-		ElementDefs[16].DrawProc := @ElementConveyorCWDraw;
+		ElementDefs[16].TickProc := ElementConveyorCWTick;
+		ElementDefs[16].DrawProc := ElementConveyorCWDraw;
 		ElementDefs[16].EditorCategory := CATEGORY_ITEM;
 		ElementDefs[16].EditorShortcut := '1';
 		ElementDefs[16].Name := 'Clockwise';
@@ -1789,8 +1807,8 @@ procedure InitElementDefs;
 		ElementDefs[17].Character := '\';
 		ElementDefs[17].Cycle := 2;
 		ElementDefs[17].HasDrawProc := true;
-		ElementDefs[17].DrawProc := @ElementConveyorCCWDraw;
-		ElementDefs[17].TickProc := @ElementConveyorCCWTick;
+		ElementDefs[17].DrawProc := ElementConveyorCCWDraw;
+		ElementDefs[17].TickProc := ElementConveyorCCWTick;
 		ElementDefs[17].EditorCategory := CATEGORY_ITEM;
 		ElementDefs[17].EditorShortcut := '2';
 		ElementDefs[17].Name := 'Counter';
@@ -1808,7 +1826,7 @@ procedure InitElementDefs;
 
 		ElementDefs[31].Character := #206;
 		ElementDefs[31].HasDrawProc := true;
-		ElementDefs[31].DrawProc := @ElementLineDraw;
+		ElementDefs[31].DrawProc := ElementLineDraw;
 		ElementDefs[31].Name := 'Line';
 
 		ElementDefs[43].Character := #186;
@@ -1829,29 +1847,29 @@ procedure InitElementDefs;
 
 		ElementDefs[24].Character := #254;
 		ElementDefs[24].Pushable := true;
-		ElementDefs[24].TouchProc := @ElementPushableTouch;
+		ElementDefs[24].TouchProc := ElementPushableTouch;
 		ElementDefs[24].EditorCategory := CATEGORY_TERRAIN;
 		ElementDefs[24].EditorShortcut := 'O';
 		ElementDefs[24].Name := 'Boulder';
 
 		ElementDefs[25].Character := #18;
-		ElementDefs[25].TouchProc := @ElementPushableTouch;
+		ElementDefs[25].TouchProc := ElementPushableTouch;
 		ElementDefs[25].EditorCategory := CATEGORY_TERRAIN;
 		ElementDefs[25].EditorShortcut := '1';
 		ElementDefs[25].Name := 'Slider (NS)';
 
 		ElementDefs[26].Character := #29;
-		ElementDefs[26].TouchProc := @ElementPushableTouch;
+		ElementDefs[26].TouchProc := ElementPushableTouch;
 		ElementDefs[26].EditorCategory := CATEGORY_TERRAIN;
 		ElementDefs[26].EditorShortcut := '2';
 		ElementDefs[26].Name := 'Slider (EW)';
 
 		ElementDefs[30].Character := #197;
-		ElementDefs[30].TouchProc := @ElementTransporterTouch;
+		ElementDefs[30].TouchProc := ElementTransporterTouch;
 		ElementDefs[30].HasDrawProc := true;
-		ElementDefs[30].DrawProc := @ElementTransporterDraw;
+		ElementDefs[30].DrawProc := ElementTransporterDraw;
 		ElementDefs[30].Cycle := 2;
-		ElementDefs[30].TickProc := @ElementTransporterTick;
+		ElementDefs[30].TickProc := ElementTransporterTick;
 		ElementDefs[30].EditorCategory := CATEGORY_TERRAIN;
 		ElementDefs[30].EditorShortcut := 'T';
 		ElementDefs[30].Name := 'Transporter';
@@ -1860,9 +1878,9 @@ procedure InitElementDefs;
 		ElementDefs[40].Character := #16;
 		ElementDefs[40].Color := COLOR_CHOICE_ON_BLACK;
 		ElementDefs[40].HasDrawProc := true;
-		ElementDefs[40].DrawProc := @ElementPusherDraw;
+		ElementDefs[40].DrawProc := ElementPusherDraw;
 		ElementDefs[40].Cycle := 4;
-		ElementDefs[40].TickProc := @ElementPusherTick;
+		ElementDefs[40].TickProc := ElementPusherTick;
 		ElementDefs[40].EditorCategory := CATEGORY_CREATURE;
 		ElementDefs[40].EditorShortcut := 'P';
 		ElementDefs[40].Name := 'Pusher';
@@ -1870,27 +1888,27 @@ procedure InitElementDefs;
 
 		ElementDefs[13].Character := #11;
 		ElementDefs[13].HasDrawProc := true;
-		ElementDefs[13].DrawProc := @ElementBombDraw;
+		ElementDefs[13].DrawProc := ElementBombDraw;
 		ElementDefs[13].Pushable := true;
 		ElementDefs[13].Cycle := 6;
-		ElementDefs[13].TickProc := @ElementBombTick;
-		ElementDefs[13].TouchProc := @ElementBombTouch;
+		ElementDefs[13].TickProc := ElementBombTick;
+		ElementDefs[13].TouchProc := ElementBombTouch;
 		ElementDefs[13].EditorCategory := CATEGORY_ITEM;
 		ElementDefs[13].EditorShortcut := 'B';
 		ElementDefs[13].Name := 'Bomb';
 
 		ElementDefs[14].Character := #127;
 		ElementDefs[14].Color := $05;
-		ElementDefs[14].TouchProc := @ElementEnergizerTouch;
+		ElementDefs[14].TouchProc := ElementEnergizerTouch;
 		ElementDefs[14].EditorCategory := CATEGORY_ITEM;
 		ElementDefs[14].EditorShortcut := 'E';
 		ElementDefs[14].Name := 'Energizer';
 
 		ElementDefs[29].Character := #206;
 		ElementDefs[29].Cycle := 1;
-		ElementDefs[29].TickProc := @ElementBlinkWallTick;
+		ElementDefs[29].TickProc := ElementBlinkWallTick;
 		ElementDefs[29].HasDrawProc := true;
-		ElementDefs[29].DrawProc := @ElementBlinkWallDraw;
+		ElementDefs[29].DrawProc := ElementBlinkWallDraw;
 		ElementDefs[29].EditorCategory := CATEGORY_TERRAIN;
 		ElementDefs[29].EditorShortcut := 'L';
 		ElementDefs[29].Name := 'Blink wall';
@@ -1902,13 +1920,13 @@ procedure InitElementDefs;
 		ElementDefs[27].EditorCategory := CATEGORY_TERRAIN;
 		ElementDefs[27].PlaceableOnTop := true;
 		ElementDefs[27].Walkable := true;
-		ElementDefs[27].TouchProc := @ElementFakeTouch;
+		ElementDefs[27].TouchProc := ElementFakeTouch;
 		ElementDefs[27].EditorShortcut := 'A';
 		ElementDefs[27].Name := 'Fake';
 
 		ElementDefs[28].Character := ' ';
 		ElementDefs[28].EditorCategory := CATEGORY_TERRAIN;
-		ElementDefs[28].TouchProc := @ElementInvisibleTouch;
+		ElementDefs[28].TouchProc := ElementInvisibleTouch;
 		ElementDefs[28].EditorShortcut := 'I';
 		ElementDefs[28].Name := 'Invisible';
 
@@ -1916,17 +1934,17 @@ procedure InitElementDefs;
 		ElementDefs[36].EditorCategory := CATEGORY_CREATURE;
 		ElementDefs[36].Cycle := 3;
 		ElementDefs[36].HasDrawProc := true;
-		ElementDefs[36].DrawProc := @ElementObjectDraw;
-		ElementDefs[36].TickProc := @ElementObjectTick;
-		ElementDefs[36].TouchProc := @ElementObjectTouch;
+		ElementDefs[36].DrawProc := ElementObjectDraw;
+		ElementDefs[36].TickProc := ElementObjectTick;
+		ElementDefs[36].TouchProc := ElementObjectTouch;
 		ElementDefs[36].EditorShortcut := 'O';
 		ElementDefs[36].Name := 'Object';
 		ElementDefs[36].Param1Name := 'Character?';
 		ElementDefs[36].ParamTextName := 'Edit Program';
 
-		ElementDefs[2].TickProc := @ElementMessageTimerTick;
+		ElementDefs[2].TickProc := ElementMessageTimerTick;
 
-		ElementDefs[1].TouchProc := @ElementBoardEdgeTouch;
+		ElementDefs[1].TouchProc := ElementBoardEdgeTouch;
 
 		EditorPatternCount := 5;
 		EditorPatterns[1] := E_SOLID;

@@ -24,7 +24,7 @@
 }
 
 {$I-}
-{$M 49152,163840,655360}
+{$PACKRECORDS 1}
 program ZZT;
 uses Crt, Dos, Video, Keys, Sounds, Input, TxtWind, GameVars, Elements, Editor, Oop, Game;
 

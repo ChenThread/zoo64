@@ -25,6 +25,7 @@
 
 {$I-}
 {$V-}
+{$PACKRECORDS 1}
 unit Game;
 
 interface

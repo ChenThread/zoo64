@@ -24,6 +24,7 @@
 }
 
 {$I-}
+{$PACKRECORDS 1}
 unit Video;
 
 interface
@@ -32,9 +33,6 @@ interface
 		TVideoWriteTextProc = procedure(x, y, color: byte; text: TVideoLine);
 	const
 		PORT_CGA_PALETTE = $03D9;
-	var
-		VideoWriteText: TVideoWriteTextProc;
-		VideoMonochrome: boolean;
 		CP437ToUnicode: array[0 .. 255] of smallint = (
 			$0020, $263A, $263B, $2665, $2666, $2663, $2660, $2022,
 			$25D8, $25CB, $25D9, $2642, $2640, $266A, $266B, $263C,
@@ -70,6 +68,9 @@ interface
 			$03A6, $0398, $03A9, $03B4, $221E, $03C6, $03B5, $2229,
 			$2261, $00B1, $2265, $2264, $2320, $2321, $00F7, $2248,
 			$00B0, $2219, $00B7, $221A, $207F, $00B2, $25A0, $0020);
+	var
+		VideoWriteText: TVideoWriteTextProc;
+		VideoMonochrome: boolean;
 	procedure WriteCP437(text: TVideoLine);
 	function VideoConfigure: boolean;
 	procedure VideoWriteTextCO80(x, y, color: byte; text: TVideoLine);
@@ -182,7 +183,7 @@ function VideoConfigure: boolean;
 	begin
 		charTyped := ' ';
 		if LastMode = 7 then begin
-			VideoWriteText := @VideoWriteTextBW80;
+			VideoWriteText := VideoWriteTextBW80;
 			VideoMonochrome := true;
 		end else begin
 			Writeln;
@@ -212,23 +213,23 @@ procedure VideoInstall(columns, borderColor: integer);
 			if LastMode in [0, 1, 2, 3] then begin
 				if columns = 80 then begin
 					TextMode(BW80);
-					VideoWriteText := @VideoWriteTextBW80;
+					VideoWriteText := VideoWriteTextBW80;
 				end else begin
 					TextMode(BW40);
-					VideoWriteText := @VideoWriteTextBW40;
+					VideoWriteText := VideoWriteTextBW40;
 				end;
 			end else begin
-				VideoWriteText := @VideoWriteTextBW80;
+				VideoWriteText := VideoWriteTextBW80;
 				TextMode(7);
 				VideoColumns := 80;
 			end;
 		end else begin
 			if VideoColumns = 80 then begin
 				TextMode(CO80);
-				VideoWriteText := @VideoWriteTextCO80;
+				VideoWriteText := VideoWriteTextCO80;
 			end else begin
 				TextMode(CO40);
-				VideoWriteText := @VideoWriteTextCO40;
+				VideoWriteText := VideoWriteTextCO40;
 			end;
 			if not VideoMonochrome then
 				TextBackground(borderColor);
@@ -289,7 +290,7 @@ procedure VideoMove(x, y, chars: integer; data: pointer; toVideo: boolean);
 		offset: integer;
 	begin
 		offset := (y * VideoColumns + x) * 2;
-		VideoWriteTextCO80(0, 0, 0, '');
+		{ VideoWriteTextCO80(0, 0, 0, ''); only needed for CGA snow handling -- asie }
 		{ TODO: Set up a buffer to put text onto }
 		{
 			if toVideo then
@@ -303,7 +304,7 @@ procedure VideoMove(x, y, chars: integer; data: pointer; toVideo: boolean);
 begin
 	VideoBorderColor := 0;
 	VideoColumns := 80;
-	VideoWriteText := @VideoWriteTextBW80;
+	VideoWriteText := VideoWriteTextBW80;
 	if LastMode = 7 then begin
 		VideoTextSegment := $B000;
 		VideoMonochrome := true;
