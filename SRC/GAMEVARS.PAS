@@ -76,6 +76,19 @@ interface
 			ParamTextName: string[20];
 			ScoreValue: smallint;
 		end;
+		TFileStat = packed record
+			X, Y: byte;
+			StepX, StepY: smallint;
+			Cycle: smallint;
+			P1, P2, P3: byte;
+			Follower: smallint;
+			Leader: smallint;
+			Under: TTile;
+			Data: longint;
+			DataPos: smallint;
+			DataLen: smallint;
+			unk1, unk2: longint;
+		end;
 		TStat = record
 			X, Y: byte;
 			StepX, StepY: smallint;

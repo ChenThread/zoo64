@@ -161,6 +161,7 @@ procedure BoardClose;
 		ix, iy: integer;
 		ptr: pointer;
 		rle: TRleTile;
+		fStat: TFileStat;
 	begin
 		ptr := IoTmpBuf;
 
@@ -196,6 +197,9 @@ procedure BoardClose;
 		Move(Board.StatCount, ptr^, SizeOf(Board.StatCount));
 		AdvancePointer(ptr, SizeOf(Board.StatCount));
 
+		{ Make sure we've got this one right --GM }
+		Assert(SizeOf(TFileStat) = 33);
+
 		for ix := 0 to Board.StatCount do begin
 			with Board.Stats[ix] do begin
 				if DataLen > 0 then begin
@@ -204,8 +208,25 @@ procedure BoardClose;
 							DataLen := -iy;
 					end;
 				end;
-				Move(Board.Stats[ix], ptr^, SizeOf(TStat));
-				AdvancePointer(ptr, SizeOf(TStat));
+
+				fStat.X := X;
+				fStat.Y := Y;
+				fStat.StepX := StepX;
+				fStat.StepY := StepY;
+				fStat.Cycle := Cycle;
+				fStat.P1 := P1;
+				fStat.P2 := P2;
+				fStat.P3 := P3;
+				fStat.Follower := Follower;
+				fStat.Leader := Leader;
+				fStat.Under := Under;
+				fStat.Data := 0;
+				fStat.DataPos := DataPos;
+				fStat.DataLen := DataLen;
+				fStat.unk1 := 0;
+				fStat.unk2 := 0;
+				Move(fStat, ptr^, SizeOf(TFileStat));
+				AdvancePointer(ptr, SizeOf(TFileStat));
 				if DataLen > 0 then begin
 					Move(Data^, ptr^, DataLen);
 					FreeMem(Data, DataLen);
@@ -225,6 +246,7 @@ procedure BoardOpen(boardId: integer);
 		ptr: pointer;
 		ix, iy: integer;
 		rle: TRleTile;
+		fStat: TFileStat;
 	begin
 		if boardId > World.BoardCount then
 			boardId := World.Info.CurrentBoard;
@@ -259,8 +281,26 @@ procedure BoardOpen(boardId: integer);
 
 		for ix := 0 to Board.StatCount do
 			with Board.Stats[ix] do begin
-				Move(ptr^, Board.Stats[ix], SizeOf(TStat));
-				AdvancePointer(ptr, SizeOf(TStat));
+				Move(ptr^, fStat, SizeOf(TFileStat));
+				AdvancePointer(ptr, SizeOf(TFileStat));
+				X := fStat.X;
+				Y := fStat.Y;
+				StepX := fStat.StepX;
+				StepY := fStat.StepY;
+				Cycle := fStat.Cycle;
+				P1 := fStat.P1;
+				P2 := fStat.P2;
+				P3 := fStat.P3;
+				Follower := fStat.Follower;
+				Leader := fStat.Leader;
+				Under := fStat.Under;
+				Data := nil;
+				DataPos := fStat.DataPos;
+				DataLen := fStat.DataLen;
+				unk1 := nil;
+				unk2 := nil;
+				Assert((X >= 1) and (X <= 60) and (Y >= 1) and (Y <= 25));
+
 				if DataLen > 0 then begin
 					GetMem(Data, DataLen);
 					Move(ptr^, Data^, DataLen);
